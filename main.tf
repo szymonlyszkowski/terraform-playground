@@ -106,6 +106,7 @@ resource "aws_instance" "web" {
   # The connection block tells our provisioner how to
   # communicate with the resource (instance)
   connection {
+    count = 10
     # The default username for our AMI
     type = "ssh"
     user = "ubuntu"
