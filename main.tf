@@ -87,7 +87,6 @@ resource "aws_elb" "web" {
 
   subnets         = ["${aws_subnet.first_vpc_subnet.id}"]
   security_groups = ["${aws_security_group.elb.id}"]
-  instances       = ["${aws_instance.web.id}"]
 
   listener {
     instance_port     = 80
@@ -95,6 +94,12 @@ resource "aws_elb" "web" {
     lb_port           = 80
     lb_protocol       = "http"
   }
+}
+
+resource "aws_elb_attachment" "web_elb" {
+  count = 10
+  elb      = "${aws_elb.web.id}"
+  instance = "${aws_instance.web[count.index].id}"
 }
 
 resource "aws_key_pair" "auth" {
@@ -116,7 +121,6 @@ resource "aws_instance" "web" {
   }
 
   instance_type = "t2.micro"
-
   # Lookup the correct AMI based on the region
   # we specified
   ami = "${lookup(var.aws_amis, var.aws_region)}"
